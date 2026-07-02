@@ -30,7 +30,7 @@ class ActivityType(Base):
     unit = Column(String, nullable=False) # ex: hr
     base_exp_per_unit = Column(Float, nullable=False) # 每單位基礎經驗值
 
-    quest_line_id = Column(Integer, ForeignKey("questlines.id"))
+    quest_line_id = Column(Integer, ForeignKey("quest_lines.id"))
     attribute_id = Column(Integer, ForeignKey("attributes.id"))
 
 class Record(Base):
@@ -42,3 +42,8 @@ class Record(Base):
     amount = Column(Float, nullable=False) # 時數or次數
     efficiency = Column(Float, default=1.0) # 0.25~1.25
     note = Column(String, nullable=True) # 備註，可留空
+
+if __name__ == "__main__":
+    engine = create_engine("sqlite:///rpg.db")
+    Base.metadata.create_all(engine)
+    print("資料庫建立成功")
