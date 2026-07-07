@@ -61,4 +61,4 @@ activity_type = [ActivityType(name="工程數學", unit="小時",base_exp_per_un
 
 session.add_all(activity_type)
 session.commit()
-print("Activity_Type 資料新增完成")
+print("ActivityType 資料新增完成")

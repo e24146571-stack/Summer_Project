@@ -1,0 +1,36 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Attribute, ActivityType, Record
+from datetime import datetime
+
+engine = create_engine("sqlite:///rpg.db")
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# 新增活動紀錄
+def add_record(activity_type_name, amount, efficiency):
+    activity = session.query(ActivityType).filter_by(name=activity_type_name).first()
+    exp_gained = amount * activity.base_exp_per_unit * efficiency
+    attribute = session.query(Attribute).filter_by(id=activity.attribute_id).first()
+    attribute.current_exp += exp_gained
+
+    # 升級判斷
+    base_exp = 100
+    growth_factor = 1.5
+    exp_needed = base_exp * (attribute.level ** growth_factor)
+    while attribute.current_exp >= exp_needed:
+        attribute.level += 1
+        attribute.current_exp -= exp_needed
+        exp_needed = base_exp * (attribute.level ** growth_factor)
+    
+    new_record = Record(date=datetime.now().date(),
+                        activity_type_id=activity.id,
+                        amount=amount,
+                        efficiency=efficiency)
+    session.add(new_record)
+    session.commit()
+    return exp_gained
+
+if __name__ == "__main__":
+    exp = add_record("工程數學", 2, 1.0)
+    print(f"這次獲得 {exp} 經驗值")
