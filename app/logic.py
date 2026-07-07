@@ -31,6 +31,25 @@ def add_record(activity_type_name, amount, efficiency):
     session.commit()
     return exp_gained
 
+# 取得所有屬性狀態
+def get_all_attributes():
+    attributes = session.query(Attribute).all()
+    result = []
+    for attr in attributes:
+        exp_needed = 100 * (attr.level ** 1.5)
+        result.append({"name": attr.name,
+                       "display_name": attr.display_name,
+                       "level": attr.level,
+                       "current_exp": attr.current_exp,
+                       "exp_needed": exp_needed})
+    return result
+
 if __name__ == "__main__":
     exp = add_record("工程數學", 2, 1.0)
     print(f"這次獲得 {exp} 經驗值")
+
+    all_attrs = get_all_attributes()
+    for attr in all_attrs:
+        print(attr)
+
+
