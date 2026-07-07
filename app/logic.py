@@ -56,7 +56,11 @@ def get_recent_records(limit=10):
                       "efficiency": record.efficiency,
                       "note": record.note})
     return result
-                                             
+
+# 查詢該活動名稱的資料
+def get_activity_by_name(name):
+    activity = session.query(ActivityType).filter_by(name=name).first()
+    return activity                           
 
 if __name__ == "__main__":
     exp = add_record("工程數學", 2, 1.0)
