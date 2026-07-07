@@ -44,6 +44,20 @@ def get_all_attributes():
                        "exp_needed": exp_needed})
     return result
 
+# 取得近期的活動紀錄
+def get_recent_records(limit=10):
+    records = session.query(Record).order_by(Record.date.desc()).limit(limit).all()
+    result = []
+    for record in records:
+        activity = session.query(ActivityType).filter_by(id=record.activity_type_id).first()
+        result.append({"date": record.date,
+                      "activity_name": activity.name,
+                      "amount": record.amount,
+                      "efficiency": record.efficiency,
+                      "note": record.note})
+    return result
+                                             
+
 if __name__ == "__main__":
     exp = add_record("工程數學", 2, 1.0)
     print(f"這次獲得 {exp} 經驗值")
@@ -52,4 +66,9 @@ if __name__ == "__main__":
     for attr in all_attrs:
         print(attr)
 
+    print("---")
+
+    recent = get_recent_records(5)
+    for r in recent:
+        print(r)
 
