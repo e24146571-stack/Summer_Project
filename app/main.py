@@ -5,11 +5,13 @@ from logic import get_all_attributes, get_recent_records, add_record, get_activi
 st.title("Summer Project")
 st.header("角色狀態")
 attributes = get_all_attributes()
-for attr in attributes:
+cols = st.columns(5)
+for i, attr in enumerate(attributes):
     progress = attr["current_exp"] / attr["exp_needed"]
-    st.write(f"**{attr['display_name']}** ({attr['name']}) - Lv.{attr['level']}")
-    st.progress(progress)
-    st.write(f"{attr['current_exp']:.1f} / {attr['exp_needed']:.1f} exp")
+    with cols[i]:
+        st.metric(label=f"{attr['display_name']} ({attr['name']})", value=f"Lv.{attr['level']}")
+        st.progress(progress)
+        st.caption(f"{attr['current_exp']:.1f} / {attr['exp_needed']:.1f} exp")
 
 # 活動新增
 st.header("新增紀錄")
@@ -29,8 +31,21 @@ efficiency_options = {"很差": 0.25,
 selected_efficiency_label = st.selectbox("效率如何?", list(efficiency_options.keys()))
 efficiency = efficiency_options[selected_efficiency_label]
 
+# 備註
+note = st.text_input("備註（選填）")
+
 # 送出按鈕
 if st.button("送出"):
-    exp_gained = add_record(selected_activity, amount, efficiency)
+    exp_gained = add_record(selected_activity, amount, efficiency, note)
     st.success(f"成功紀錄!獲得 {exp_gained:.1f} 經驗值")
     st.rerun()
+
+# 近期紀錄
+st.header("近期紀錄")
+recent_records = get_recent_records(10)
+st.dataframe(recent_records, use_container_width=True, 
+             column_config={"date": "日期",
+                            "activity_name": "活動",
+                            "amount": "數量",
+                            "efficiency": "效率",
+                            "note": "備註"})

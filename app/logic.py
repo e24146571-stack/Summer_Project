@@ -8,7 +8,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 # 新增活動紀錄
-def add_record(activity_type_name, amount, efficiency):
+def add_record(activity_type_name, amount, efficiency, note=None):
     activity = session.query(ActivityType).filter_by(name=activity_type_name).first()
     exp_gained = amount * activity.base_exp_per_unit * efficiency
     attribute = session.query(Attribute).filter_by(id=activity.attribute_id).first()
@@ -26,7 +26,8 @@ def add_record(activity_type_name, amount, efficiency):
     new_record = Record(date=datetime.now().date(),
                         activity_type_id=activity.id,
                         amount=amount,
-                        efficiency=efficiency)
+                        efficiency=efficiency,
+                        note=note)
     session.add(new_record)
     session.commit()
     return exp_gained
@@ -45,7 +46,7 @@ def get_all_attributes():
     return result
 
 # 取得近期的活動紀錄
-def get_recent_records(limit=10):
+def get_recent_records(limit):
     records = session.query(Record).order_by(Record.date.desc()).limit(limit).all()
     result = []
     for record in records:
